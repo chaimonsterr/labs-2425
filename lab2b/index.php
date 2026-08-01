@@ -1,6 +1,9 @@
 <?php
 
-define('CUSTOMERS_FILE_PATH', 'customers-100.csv');
+define('CUSTOMERS_FILE_PATH', 'customers-100000.csv');
+
+// Start the timer
+$start_time = microtime(true);
 
 function get_hundred_customers_data()
 {
@@ -32,6 +35,10 @@ function get_hundred_customers_data()
 
 $customers = get_hundred_customers_data();
 
+// Stop the timer and calculate elapsed time
+$end_time = microtime(true);
+$execution_time = $end_time - $start_time;
+
 ?>
 <html>
 <head>
@@ -53,6 +60,10 @@ $customers = get_hundred_customers_data();
 <small>
 The dataset is retrieved from this URL <a href="https://www.datablist.com/learn/csv/download-sample-csv-files">https://www.datablist.com/learn/csv/download-sample-csv-files</a>
 </small>
+<p>
+    <strong>Total customers loaded:</strong> <?php echo count($customers['data']); ?><br>
+    <strong>Execution time:</strong> <?php echo round($execution_time, 4); ?> seconds
+</p>
 <table aria-label="Customers Dataset">
     <thead>
         <tr>

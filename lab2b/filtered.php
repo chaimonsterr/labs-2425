@@ -1,6 +1,6 @@
 <?php
 
-define('CUSTOMERS_FILE_PATH', 'customers-100.csv');
+define('CUSTOMERS_FILE_PATH', 'customers-100000.csv');
 
 function get_hundred_customers_data( $filter_letter )
 {
