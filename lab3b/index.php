@@ -1,9 +1,9 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>IPT10 Laboratory Activity #2</title>
+    <title>IPT10 Laboratory Activity #3B</title>
     <link rel="icon" href="https://phpsandbox.io/assets/img/brand/phpsandbox.png">
-    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css" />   
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla-framework-version-4.15.0.min.css" />
 </head>
 
 <body style="background-color: pink;">
@@ -21,7 +21,10 @@
   <div class="col">
     <h4>File Upload</h4>
 
-    <form>
+    <!-- BUG FIX: original form had no method, no enctype, and no action.
+         Without method="POST" + enctype="multipart/form-data", $_FILES will
+         always be empty in uploaded.php - file uploads simply won't work. -->
+    <form method="POST" action="uploaded.php" enctype="multipart/form-data">
         <div class="p-card">
             <h3>Text File</h3>
             <p class="p-card__content">
@@ -43,4 +46,3 @@
 
 </body>
 </html>
-
