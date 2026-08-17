@@ -57,3 +57,19 @@ if (isset($_FILES['audio_file']) && $_FILES['audio_file']['error'] === UPLOAD_ER
         echo '<p>Failed to upload audio file.</p>';
     }
 }
+
+// from image-file-upload branch: Handle Image File and display it with an <img> tag
+if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
+    $uploaded_image_file = $upload_directory . basename($_FILES['image_file']['name']);
+    $temporary_file = $_FILES['image_file']['tmp_name'];
+    $relative_image_path = $relative_path . basename($_FILES['image_file']['name']);
+
+    if (move_uploaded_file($temporary_file, $uploaded_image_file)) {
+        ?>
+        <h3>Image File</h3>
+        <img src="<?php echo htmlspecialchars($relative_image_path); ?>" alt="Uploaded image" style="max-width: 400px;" />
+        <?php
+    } else {
+        echo '<p>Failed to upload image file.</p>';
+    }
+}
