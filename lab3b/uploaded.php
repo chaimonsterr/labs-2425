@@ -73,3 +73,22 @@ if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ER
         echo '<p>Failed to upload image file.</p>';
     }
 }
+
+// from video-file-upload branch: Handle Video File and display it with a <video> player
+if (isset($_FILES['video_file']) && $_FILES['video_file']['error'] === UPLOAD_ERR_OK) {
+    $uploaded_video_file = $upload_directory . basename($_FILES['video_file']['name']);
+    $temporary_file = $_FILES['video_file']['tmp_name'];
+    $relative_video_path = $relative_path . basename($_FILES['video_file']['name']);
+
+    if (move_uploaded_file($temporary_file, $uploaded_video_file)) {
+        ?>
+        <h3>Video File</h3>
+        <video width="480" controls>
+            <source src="<?php echo htmlspecialchars($relative_video_path); ?>" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <?php
+    } else {
+        echo '<p>Failed to upload video file.</p>';
+    }
+}
