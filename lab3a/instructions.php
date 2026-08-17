@@ -1,17 +1,24 @@
 <?php
-# from the $_SERVER global variable, check if the HTTP method used is POST, if its not POST, redirect to the index.php page
-# Reference: https://www.php.net/manual/en/reserved.variables.server.php
+require "helpers.php";
 
-// Supply the missing code
+// from the $_SERVER global variable, check if the HTTP method used is POST, if its not POST, redirect to the index.php page
+// BUG FIX: header('Location: ...') does NOT stop script execution by itself.
+// Without exit; the rest of the page (which assumes $_POST data exists) kept
+// running even after issuing the redirect. Added exit; right after it.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php');
+    exit;
 }
 
 // Supply the missing code
-$complete_name = $_POST['complete_name'];
-$email = $_POST['email'];
-$birthdate = $_POST['birthdate'];
-$contact_number = $_POST['contact_number'];
+$complete_name  = $_POST['complete_name']  ?? '';
+$email          = $_POST['email']          ?? '';
+$birthdate      = $_POST['birthdate']      ?? '';
+$contact_number = $_POST['contact_number'] ?? '';
+
+// Used for the "Hello [FIRST NAME]" greeting.
+$name_parts = explode(' ', trim($complete_name));
+$first_name = $name_parts[0] ?? $complete_name;
 ?>
 <html>
 <head>
@@ -21,43 +28,74 @@ $contact_number = $_POST['contact_number'];
 </head>
 <body>
 <section class="section">
-    <h1 class="title">Instructions</h1>
-    <h2 class="subtitle">
-        This is the IPT10 PHP Quiz Web Application Laboratory Activity.
-    </h2>
+    <div class="container">
+        <h1 class="title">Instructions</h1>
+        <h2 class="subtitle">
+            Hello <?php echo h($first_name); ?>, please read the instructions first
+        </h2>
 
-    <!-- Supply the correct HTTP method and target form handler resource -->
-    <form method="POST" action="">
-        <input type="hidden" value="<?php echo $complete_name; ?>" />
-        <input type="hidden" value="<?php echo $email; ?>" />
-        <input type="hidden" value="<?php echo $birthdate; ?>" />
-        <input type="hidden" value="<?php echo $contact_number; ?>" />
+        <!-- BUG FIX: target action was blank (""), meaning the form posted
+             back to itself instead of moving to quiz.php. -->
+        <form method="POST" action="quiz.php" id="instructions-form">
+            <!-- BUG FIX: the original hidden inputs had no "name" attribute,
+                 so none of the registration data was actually sent to the
+                 next page ($_POST would be missing complete_name, email, etc). -->
+            <input type="hidden" name="complete_name"  value="<?php echo h($complete_name); ?>" />
+            <input type="hidden" name="email"          value="<?php echo h($email); ?>" />
+            <input type="hidden" name="birthdate"      value="<?php echo h($birthdate); ?>" />
+            <input type="hidden" name="contact_number" value="<?php echo h($contact_number); ?>" />
 
-        <!-- Display the instruction -->
-        <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-
-        <div class="field">
-            <label class="label">Terms and conditions</label>
-            <div class="control">
-                <textarea class="textarea" placeholder="Textarea">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</textarea>
+            <!-- Display the instruction -->
+            <div class="content">
+                <p>
+                    Welcome to the IPT10 PHP Trivia Quiz! You are about to answer 5 multiple-choice
+                    questions about Philippine history and geography. Read each question carefully
+                    and select one answer per question. Once you start, you will have
+                    <strong>60 seconds</strong> to finish and submit the quiz — after that, it will
+                    submit automatically with whatever answers you've selected so far. Good luck!
+                </p>
             </div>
-        </div>
 
-        <div class="field">
-            <div class="control">
-                <label class="checkbox">
-                <input type="checkbox" name="disagree">
-                I agree to the <a href="#">terms and conditions</a>
-                </label>
+            <div class="field">
+                <label class="label">Terms and conditions</label>
+                <div class="control">
+                    <textarea class="textarea" readonly rows="5">By taking this quiz, you agree to answer honestly and acknowledge that your name, email, birthdate, and contact number will be used solely for this activity's results page. No data is stored or shared beyond this session.</textarea>
+                </div>
             </div>
-        </div>
 
-        <!-- Start Quiz button -->
-        <button type="submit" class="button is-link">Start Quiz</button>
-    </form>
+            <div class="field">
+                <div class="control">
+                    <label class="checkbox">
+                        <!-- BUG FIX: checkbox was named "disagree" while the label said
+                             "I agree to the terms and conditions" - contradictory and
+                             confusing. Renamed to "agree" to match its actual meaning. -->
+                        <input type="checkbox" id="agree" name="agree" value="yes">
+                        I agree to the <a href="#">terms and conditions</a>
+                    </label>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="control">
+                    <!-- Disabled by default; JS enables it once the checkbox is ticked -->
+                    <button type="submit" class="button is-link" id="start-quiz-btn" disabled>Start Quiz</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </section>
 
+<script>
+    // TASK: disable the Start Quiz button unless the terms checkbox is ticked.
+    const agreeCheckbox = document.getElementById('agree');
+    const startBtn = document.getElementById('start-quiz-btn');
+
+    function validateAgreement() {
+        startBtn.disabled = !agreeCheckbox.checked;
+    }
+
+    agreeCheckbox.addEventListener('change', validateAgreement);
+    validateAgreement();
+</script>
 </body>
 </html>
