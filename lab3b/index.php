@@ -21,14 +21,19 @@
   <div class="col">
     <h4>File Upload</h4>
 
-    <!-- BUG FIX: original form had no method, no enctype, and no action.
-         Without method="POST" + enctype="multipart/form-data", $_FILES will
-         always be empty in uploaded.php - file uploads simply won't work. -->
     <form method="POST" action="uploaded.php" enctype="multipart/form-data">
         <div class="p-card">
             <h3>Text File</h3>
             <p class="p-card__content">
             <input type="file" name="text_file" accept=".txt" />
+            </p>
+        </div>
+
+        <!-- TASK: PDF file upload input, only accepts .pdf files -->
+        <div class="p-card">
+            <h3>PDF File</h3>
+            <p class="p-card__content">
+            <input type="file" name="pdf_file" accept=".pdf" />
             </p>
         </div>
 

@@ -3,8 +3,6 @@
 $upload_directory = getcwd() . '/uploads/';
 $relative_path = '/uploads/';
 
-// BUG FIX: the "uploads" folder must exist before move_uploaded_file() can
-// write into it, otherwise it silently fails. Create it if missing.
 if (!is_dir($upload_directory)) {
     mkdir($upload_directory, 0755, true);
 }
@@ -22,5 +20,21 @@ if (isset($_FILES['text_file']) && $_FILES['text_file']['error'] === UPLOAD_ERR_
         <?php
     } else {
         echo '<p>Failed to upload text file.</p>';
+    }
+}
+
+// TASK: Handle PDF File and display it embedded in the page
+if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] === UPLOAD_ERR_OK) {
+    $uploaded_pdf_file = $upload_directory . basename($_FILES['pdf_file']['name']);
+    $temporary_file = $_FILES['pdf_file']['tmp_name'];
+    $relative_pdf_path = $relative_path . basename($_FILES['pdf_file']['name']);
+
+    if (move_uploaded_file($temporary_file, $uploaded_pdf_file)) {
+        ?>
+        <h3>PDF File</h3>
+        <embed src="<?php echo htmlspecialchars($relative_pdf_path); ?>" type="application/pdf" width="100%" height="600px" />
+        <?php
+    } else {
+        echo '<p>Failed to upload PDF file.</p>';
     }
 }
